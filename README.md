@@ -133,11 +133,7 @@ primary         = NUMBER | STRING | "тру" | "фолс" | IDENT | "(" expressi
 - Точка входа CLI: `bidon.py`
 - Ядро: `slanglang/interpreter.py`
 
-Запуск:
-
-```bash
-python bidon.py examples/01_hello_world.bidon
-```
+Запуск:`r`n`r`n```bash`r`npython bidon.py examples/01_hello_world.bidon`r`n```\r\n\r\nИнтерактивный режим (как shell):\r\n\r\n```bash\r\npython bidon.py --repl\r\n# или просто\r\npython bidon.py\r\n```
 
 ## 6) Примеры программ
 
@@ -202,4 +198,5 @@ go_по i от 1 до 5 {
 - синтаксис предсказуемый
 
 Итог: прикольно, но не кринжово для обучения.
+
 
