@@ -11,7 +11,7 @@ def main() -> int:
     args = parser.parse_args()
 
     file_path = pathlib.Path(args.file)
-    source = file_path.read_text(encoding="utf-8")
+    source = file_path.read_text(encoding="utf-8-sig")
 
     try:
         run_source(source)
