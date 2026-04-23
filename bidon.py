@@ -1,4 +1,5 @@
 ﻿import argparse
+import os
 import pathlib
 import sys
 
@@ -8,6 +9,12 @@ from slanglang.interpreter import BidonRuntimeError, BidonSyntaxError, run_sourc
 def configure_windows_utf8() -> None:
     if sys.platform != "win32":
         return
+
+    # In classic Windows PowerShell, `chcp` is often required for visible UTF-8 output.
+    try:
+        os.system("chcp 65001 >NUL")
+    except Exception:
+        pass
 
     try:
         import ctypes

@@ -64,18 +64,23 @@ def _console_print(value: Any) -> None:
         try:
             import ctypes
 
-            handle = ctypes.windll.kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
-            written = ctypes.c_ulong(0)
+            kernel32 = ctypes.windll.kernel32
+            handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+            mode = ctypes.c_uint32()
             payload = text + "\n"
-            ok = ctypes.windll.kernel32.WriteConsoleW(
-                handle,
-                payload,
-                len(payload),
-                ctypes.byref(written),
-                None,
-            )
-            if ok:
-                return
+
+            # WriteConsoleW works only for real console handles.
+            if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+                written = ctypes.c_ulong(0)
+                ok = kernel32.WriteConsoleW(
+                    handle,
+                    ctypes.c_wchar_p(payload),
+                    len(payload),
+                    ctypes.byref(written),
+                    None,
+                )
+                if ok:
+                    return
         except Exception:
             pass
     print(text)
@@ -564,4 +569,6 @@ def run_source(source: str) -> None:
     program = parse(source)
     interpreter = Interpreter()
     interpreter.run(program)
+
+
 
