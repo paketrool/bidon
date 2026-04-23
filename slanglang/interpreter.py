@@ -2,6 +2,7 @@
 
 import re
 import sys
+from ast import literal_eval
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
@@ -321,7 +322,7 @@ class Parser:
 
         if self._match("STRING"):
             raw = self._previous().value
-            value = bytes(raw[1:-1], "utf-8").decode("unicode_escape")
+            value = literal_eval(raw)
             return {"type": "literal", "value": value}
 
         if self._match("KW_TRUE"):
