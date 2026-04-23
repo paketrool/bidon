@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
@@ -55,6 +56,29 @@ class ReturnSignal(Exception):
     def __init__(self, value: Any):
         self.value = value
 
+
+
+def _console_print(value: Any) -> None:
+    text = str(value)
+    if sys.platform == "win32":
+        try:
+            import ctypes
+
+            handle = ctypes.windll.kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+            written = ctypes.c_ulong(0)
+            payload = text + "\n"
+            ok = ctypes.windll.kernel32.WriteConsoleW(
+                handle,
+                payload,
+                len(payload),
+                ctypes.byref(written),
+                None,
+            )
+            if ok:
+                return
+        except Exception:
+            pass
+    print(text)
 
 class Environment:
     def __init__(self, parent: Optional["Environment"] = None):
@@ -387,7 +411,7 @@ class Interpreter:
 
         if stmt_type == "print":
             value = self.eval(stmt["expr"])
-            print(value)
+            _console_print(value)
             return
 
         if stmt_type == "if":
@@ -540,3 +564,4 @@ def run_source(source: str) -> None:
     program = parse(source)
     interpreter = Interpreter()
     interpreter.run(program)
+
