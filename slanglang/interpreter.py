@@ -69,7 +69,7 @@ def _console_print(value: Any) -> None:
             mode = ctypes.c_uint32()
             payload = text + "\n"
 
-            # WriteConsoleW works only for real console handles.
+            # WriteConsoleW works only for a real console handle.
             if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
                 written = ctypes.c_ulong(0)
                 ok = kernel32.WriteConsoleW(
@@ -83,6 +83,16 @@ def _console_print(value: Any) -> None:
                     return
         except Exception:
             pass
+
+        # Fallback for non-console handles: write bytes using active stdout encoding.
+        try:
+            encoding = sys.stdout.encoding or "cp866"
+            sys.stdout.buffer.write((text + "\n").encode(encoding, errors="replace"))
+            sys.stdout.flush()
+            return
+        except Exception:
+            pass
+
     print(text)
 
 class Environment:
@@ -569,6 +579,7 @@ def run_source(source: str) -> None:
     program = parse(source)
     interpreter = Interpreter()
     interpreter.run(program)
+
 
 
 
