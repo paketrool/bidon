@@ -84,27 +84,27 @@ def _is_complete_chunk(text: str) -> bool:
 
 
 def run_repl() -> int:
-    print("Bidon REPL: пиши код на Бидоне. :help для подсказки, :exit для выхода")
+    print("Bidon REPL: type Bidon code. :help for help, :exit to quit")
     interpreter = Interpreter()
     lines: list[str] = []
 
     while True:
-        prompt = "бидон> " if not lines else "... "
+        prompt = "bidon> " if not lines else "... "
         try:
             line = input(prompt)
         except EOFError:
             print()
             return 0
         except KeyboardInterrupt:
-            print("\n[Бидон] Ок, выходим")
+            print("\n[Bidon] Exit")
             return 0
 
         command = line.strip()
         if not lines and command in {":exit", ":quit"}:
             return 0
         if not lines and command == ":help":
-            print("Команды: :help, :exit")
-            print("Пример: заведи имя = \"Коля\"; чекни \"прив, \" + имя;")
+            print("Commands: :help, :exit")
+            print("Example: zavedi imya = \"Kolya\"; chekni \"priv, \" + imya;")
             continue
         if not lines and not command:
             continue
@@ -119,7 +119,7 @@ def run_repl() -> int:
             program = parse(chunk)
             interpreter.run(program)
         except (BidonSyntaxError, BidonRuntimeError) as error:
-            print(f"[Бидон фейл] {error}", file=sys.stderr)
+            print(f"[Bidon error] {error}", file=sys.stderr)
         finally:
             lines.clear()
 
@@ -127,8 +127,8 @@ def run_repl() -> int:
 def main() -> int:
     configure_windows_console_encoding()
 
-    parser = argparse.ArgumentParser(description="Интерпретатор языка Бидон")
-    parser.add_argument("file", nargs="?", help="Путь к .bidon файлу")
+    parser = argparse.ArgumentParser(description="Bidon language interpreter")
+    parser.add_argument("file", nargs="?", help="Path to .bidon file")
     parser.add_argument("--repl", action="store_true", help="Запустить интерактивный режим")
     args = parser.parse_args()
 
@@ -141,7 +141,7 @@ def main() -> int:
     try:
         run_source(source)
     except (BidonSyntaxError, BidonRuntimeError) as error:
-        print(f"[Бидон фейл] {error}", file=sys.stderr)
+        print(f"[Bidon error] {error}", file=sys.stderr)
         return 1
 
     return 0
