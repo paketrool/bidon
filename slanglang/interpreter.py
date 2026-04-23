@@ -86,7 +86,7 @@ def _console_print(value: Any) -> None:
 
         # Fallback for non-console handles: write bytes using active stdout encoding.
         try:
-            encoding = sys.stdout.encoding or "cp866"
+            encoding = sys.stdout.encoding or "cp1251"
             sys.stdout.buffer.write((text + "\n").encode(encoding, errors="replace"))
             sys.stdout.flush()
             return
@@ -579,6 +579,7 @@ def run_source(source: str) -> None:
     program = parse(source)
     interpreter = Interpreter()
     interpreter.run(program)
+
 
 
 

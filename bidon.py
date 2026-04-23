@@ -12,11 +12,11 @@ def configure_windows_console_encoding() -> None:
     try:
         import ctypes
 
-        # Use Windows OEM code page (e.g. cp866) to match classic PowerShell rendering.
-        oem_codepage = int(ctypes.windll.kernel32.GetOEMCP())
-        encoding = f"cp{oem_codepage}" if oem_codepage > 0 else "cp866"
+        # Classic PowerShell often expects Windows ANSI code page for Python output.
+        acp = int(ctypes.windll.kernel32.GetACP())
+        encoding = f"cp{acp}" if acp > 0 else "cp1251"
     except Exception:
-        encoding = "cp866"
+        encoding = "cp1251"
 
     for stream in (sys.stdout, sys.stderr):
         try:
@@ -46,4 +46,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
