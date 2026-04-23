@@ -1,8 +1,32 @@
 ﻿import argparse
+import io
 import pathlib
 import sys
 
 from slanglang.interpreter import BidonRuntimeError, BidonSyntaxError, run_source
+
+
+def _bind_stream_encoding(stream_name: str, encoding: str) -> None:
+    stream = getattr(sys, stream_name)
+
+    try:
+        stream.reconfigure(encoding=encoding, errors="replace")
+        return
+    except Exception:
+        pass
+
+    try:
+        buffer = stream.buffer
+        wrapped = io.TextIOWrapper(
+            buffer,
+            encoding=encoding,
+            errors="replace",
+            line_buffering=True,
+            write_through=True,
+        )
+        setattr(sys, stream_name, wrapped)
+    except Exception:
+        pass
 
 
 def configure_windows_console_encoding() -> None:
@@ -12,17 +36,13 @@ def configure_windows_console_encoding() -> None:
     try:
         import ctypes
 
-        # Classic PowerShell often expects Windows ANSI code page for Python output.
         acp = int(ctypes.windll.kernel32.GetACP())
         encoding = f"cp{acp}" if acp > 0 else "cp1251"
     except Exception:
         encoding = "cp1251"
 
-    for stream in (sys.stdout, sys.stderr):
-        try:
-            stream.reconfigure(encoding=encoding, errors="replace")
-        except Exception:
-            pass
+    _bind_stream_encoding("stdout", encoding)
+    _bind_stream_encoding("stderr", encoding)
 
 
 def main() -> int:
